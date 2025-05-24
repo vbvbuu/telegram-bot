@@ -1,19 +1,16 @@
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
-    Application, CommandHandler, MessageHandler, filters,
-    CallbackContext, CallbackQueryHandler
+    ApplicationBuilder, CommandHandler, MessageHandler, filters,
+    CallbackContext, CallbackQueryHandler, JobQueue
 )
 from datetime import time, timedelta, timezone
-from flask import Flask
-from threading import Thread
+import logging
 
 TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"
 WEBHOOK_PATH = "/webhook"
-PORT = int(os.environ.get("PORT", 5000))  # Render 会自动设置端口
-BASE_URL = "https://telegram-bot-z8zl.onrender.com"  # 改成你的 Render 域名
-
-# --- Telegram Bot Handlers ---
+PORT = int(os.environ.get("PORT", 5000))
+BASE_URL = "https://telegram-bot-z8zl.onrender.com"  # 你自己的域名
 
 async def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
@@ -21,7 +18,6 @@ async def start(update: Update, context: CallbackContext) -> None:
         f.write(f"{chat_id}\n")
     with open("welcome.png", "rb") as photo:
         await context.bot.send_photo(chat_id=chat_id, photo=photo, caption="Welcome to VictorBet💎👇")
-
     keyboard = [
         [InlineKeyboardButton("📝 Register", callback_data="register")],
         [InlineKeyboardButton("🚀 New Telegram Channel", callback_data="telegram_channel")],
@@ -33,7 +29,6 @@ async def start(update: Update, context: CallbackContext) -> None:
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     await query.answer()
-
     if query.data == "register":
         await query.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW")
     elif query.data == "telegram_channel":
@@ -66,56 +61,33 @@ async def scheduled_message(context: CallbackContext):
     except FileNotFoundError:
         print("没有 user_ids.txt 文件，还没有用户启动过 Bot")
 
-# --- Flask Web 服务器（仅本地保活用）---
-
-flask_app = Flask(__name__)
-
-@flask_app.route("/")
-def home():
-    return "✅ VictorBot is running."
-
-# --- 主函数 ---
-
 def main():
-    from telegram.ext import ApplicationBuilder
-
+    malaysia = timezone(timedelta(hours=8))
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # 只在本地 Polling 模式初始化 JobQueue，避免 NoneType
-    if "RENDER" not in os.environ:
-        from telegram.ext import JobQueue
-        app.job_queue = JobQueue()
-        app.job_queue.set_application(app)
-        app.job_queue.start()
-
-    # 添加 Telegram 处理器
+    # 添加处理器
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, keyword_reply))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_member))
 
-    malaysia = timezone(timedelta(hours=8))
+    # 初始化并启动 job_queue
+    job_queue = app.job_queue
+    job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
+    job_queue.start()
 
-    if "RENDER" in os.environ:
-        # Webhook 模式（Render 线上）
+    if os.environ.get("RENDER"):
         webhook_url = f"{BASE_URL}{WEBHOOK_PATH}"
-        print(f"🚀 正在使用 Webhook：{webhook_url}")
+        print(f"🚀 Starting webhook with URL: {webhook_url} on port {PORT}")
         app.run_webhook(
             listen="0.0.0.0",
             port=PORT,
+            url_path=WEBHOOK_PATH,
             webhook_url=webhook_url,
-            webhook_path=WEBHOOK_PATH
         )
     else:
-        # 本地调试用 Polling
-        app.job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
-        print("🖥️ 本地开发模式 - 使用 polling")
+        print("🖥️ Running in polling mode")
         app.run_polling()
-
-# --- 本地模式启动 Flask 保活 ---
-
-if "RENDER" not in os.environ:
-    Thread(target=lambda: flask_app.run(host="0.0.0.0", port=PORT)).start()
 
 if __name__ == "__main__":
     main()
