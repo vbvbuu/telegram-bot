@@ -1,5 +1,2 @@
-python-telegram-bot[webhooks,job_queue]==20.0
-apscheduler
-tzdata
-flask
-requests
+python-telegram-bot[webhooks,job-queue]
+Flask
