@@ -1,4 +1,4 @@
-pip install "python-telegram-bot[webhooks,job_queue]"
+python-telegram-bot[webhooks,job_queue]==20.0
 apscheduler
 tzdata
 flask
