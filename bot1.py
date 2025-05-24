@@ -39,11 +39,11 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 async def keyword_reply(update: Update, context: CallbackContext) -> None:
     text = update.message.text.lower()
     if "hi boss" in text or "daftar" in text:
-        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW")
+        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW\n💬 Tekan link utk chat CS ajar register: \nhttps://direct.lc.chat/14684676/")
     elif "livechat" in text:
         await update.message.reply_text("💬 Tekan link utk chat CS: \nhttps://direct.lc.chat/14684676/")
     else:
-        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW")
+        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW\n💬 Tekan link utk chat CS ajar register: \nhttps://direct.lc.chat/14684676/")
 
 async def welcome_new_member(update: Update, context: CallbackContext) -> None:
     for member in update.message.new_chat_members:
