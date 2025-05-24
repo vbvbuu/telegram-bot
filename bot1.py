@@ -11,7 +11,8 @@ import logging
 # Bot Token
 TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"
 # 你的公网Webhook地址（替换成你的域名和路径）
-WEBHOOK_URL = "https://telegram-bot-z8zl.onrender.com/webhook"
+WEBHOOK_URL = "https://api.telegram.org/bot7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0/setWebhook?url=https://your-domain.com/webhook
+"
 
 # --- Telegram Bot 功能 ---
 
