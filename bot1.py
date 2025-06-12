@@ -55,8 +55,7 @@ async def scheduled_message(context: CallbackContext):
             user_ids = list(set(line.strip() for line in f if line.strip()))
         for user_id in user_ids:
             try:
-                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet Daily notification
-：Topup skrg n BIGWIN！")
+                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet Daily notification：Topup skrg n BIGWIN！")
             except Exception as e:
                 print(f"发送给 {user_id} 失败：{e}")
     except FileNotFoundError:
