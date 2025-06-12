@@ -26,6 +26,14 @@ async def start(update: Update, context: CallbackContext) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Select option at below：", reply_markup=reply_markup)
 
+async def send_promo(update: Update, context: CallbackContext):
+    channel_id = -1002006991320
+    keyboard = [
+        [InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await context.bot.send_message(chat_id=channel_id, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup）
+
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     await query.answer()
