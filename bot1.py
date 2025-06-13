@@ -20,7 +20,7 @@ async def start(update: Update, context: CallbackContext) -> None:
         await context.bot.send_photo(chat_id=chat_id, photo=photo, caption="Welcome to VictorBet💎👇")
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/Victorbet_Channel")],
+        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
