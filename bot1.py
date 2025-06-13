@@ -71,7 +71,7 @@ async def scheduled_message(context: CallbackContext):
 
 async def forward_rich_post(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
-    admin_ids = [12345678]  # 请替换成你自己的 Telegram ID
+    admin_ids = [7060111888]  # 请替换成你自己的 Telegram ID
     channel_id = -1002006991320
 
     if user_id not in admin_ids:
