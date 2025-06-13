@@ -26,14 +26,6 @@ async def start(update: Update, context: CallbackContext) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Select option at below：", reply_markup=reply_markup)
 
-async def send_promo(update: Update, context: CallbackContext):
-    channel_id = -1002006991320
-    keyboard = [
-        [InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=channel_id, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup）
-
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     await query.answer()
@@ -63,7 +55,7 @@ async def scheduled_message(context: CallbackContext):
             user_ids = list(set(line.strip() for line in f if line.strip()))
         for user_id in user_ids:
             try:
-                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet Daily notification：Topup skrg n BIGWIN！")
+                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet 每日提醒：今天也别错过优惠活动！")
             except Exception as e:
                 print(f"发送给 {user_id} 失败：{e}")
     except FileNotFoundError:
