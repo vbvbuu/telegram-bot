@@ -7,10 +7,12 @@ from telegram.ext import (
 from datetime import time, timedelta, timezone
 import logging
 
-TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"
+TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"  # 替换成你的 Bot Token
 WEBHOOK_PATH = "/webhook"
 PORT = int(os.environ.get("PORT", 5000))
-BASE_URL = "https://telegram-bot-z8zl.onrender.com"  # 你自己的域名
+BASE_URL = "https://telegram-bot-z8zl.onrender.com"  # 你的 Render 域名
+CHANNEL_ID = -1002006991320  # 你的频道 ID
+ADMIN_IDS = [7060111888]  # 替换成你自己的 Telegram ID（可以加多个）
 
 async def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
@@ -27,12 +29,17 @@ async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text("Select option at below：", reply_markup=reply_markup)
 
 async def send_promo(update: Update, context: CallbackContext):
-    channel_id = -1002006991320
     keyboard = [
-        [InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW")]
+        [
+            InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
+            InlineKeyboardButton("💬 联系客服", url="https://direct.lc.chat/14684676/")
+        ],
+        [
+            InlineKeyboardButton("📢 加入频道", url="https://t.me/Victorbet_Channel")
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=channel_id, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup)
+    await context.bot.send_message(chat_id=CHANNEL_ID, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup)
 
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
@@ -69,34 +76,38 @@ async def scheduled_message(context: CallbackContext):
     except FileNotFoundError:
         print("没有 user_ids.txt 文件，还没有用户启动过 Bot")
 
-async def forward_rich_post(update: Update, context: CallbackContext):
-    user_id = update.effective_user.id
-    admin_ids = [7060111888]  # 请替换成你自己的 Telegram ID
-    channel_id = -1002006991320
+# ✅ rich post handler：发图 + 文案自动推送到频道，带 3 个按钮
+async def handle_photo_post(update: Update, context: CallbackContext) -> None:
+    user_id = update.message.from_user.id
 
-    if user_id not in admin_ids:
-        await update.message.reply_text("❌ 没权限执行此命令")
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("🚫 你没有权限发布到频道。")
         return
 
-    if update.message.photo:
-        caption = update.message.caption or "🎯 优惠来了！"
-        photo = update.message.photo[-1].file_id
+    if update.message.caption and update.message.photo:
+        photo_file_id = update.message.photo[-1].file_id
+        caption = update.message.caption
 
         keyboard = [
-            [InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW")]
+            [
+                InlineKeyboardButton("🔗 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
+                InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
+            ],
+            [
+                InlineKeyboardButton("📢 New Telegram Channel", url="https://t.me/Victorbet_Channel")
+            ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await context.bot.send_photo(
-            chat_id=channel_id,
-            photo=photo,
+            chat_id=CHANNEL_ID,
+            photo=photo_file_id,
             caption=caption,
-            parse_mode="HTML",
             reply_markup=reply_markup
         )
-        await update.message.reply_text("✅ 已转发 rich post 到频道")
+        await update.message.reply_text("✅ 已发布到频道！")
     else:
-        await update.message.reply_text("⚠️ 请发一张图 + 文案")
+        await update.message.reply_text("❗ 请发送附带文字说明的图片。")
 
 def main():
     malaysia = timezone(timedelta(hours=8))
@@ -105,9 +116,9 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("send_promo", send_promo))
     app.add_handler(CallbackQueryHandler(button_callback))
-    app.add_handler(MessageHandler(filters.PHOTO, forward_rich_post))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, keyword_reply))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_member))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_photo_post))  # rich post handler
 
     job_queue = app.job_queue
     job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
