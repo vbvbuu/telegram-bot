@@ -2,7 +2,7 @@ import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
-    CallbackContext, CallbackQueryHandler, JobQueue
+    CallbackContext, CallbackQueryHandler
 )
 from datetime import time, timedelta, timezone
 import logging
@@ -11,24 +11,36 @@ TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"
 WEBHOOK_PATH = "/webhook"
 PORT = int(os.environ.get("PORT", 5000))
 BASE_URL = "https://telegram-bot-z8zl.onrender.com"  # 你自己的域名
+CHANNEL_ID = -1002006991320
 
+# --- 指令功能 ---
 async def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
     with open("user_ids.txt", "a") as f:
         f.write(f"{chat_id}\n")
     with open("welcome.png", "rb") as photo:
         await context.bot.send_photo(chat_id=chat_id, photo=photo, caption="Welcome to VictorBet💎👇")
+
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
-        [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
+        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/Victorbet_Channel")],
+        [InlineKeyboardButton("📲 Contact us", url="https://direct.lc.chat/14684676/")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Select option at below：", reply_markup=reply_markup)
 
+async def send_promo(update: Update, context: CallbackContext):
+    keyboard = [
+        [InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await context.bot.send_message(chat_id=CHANNEL_ID, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup)
+
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     await query.answer()
+
+    # （已改按钮为 URL，这段就不会触发了，但保留也可以）
     if query.data == "register":
         await query.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW")
     elif query.data == "telegram_channel":
@@ -55,26 +67,24 @@ async def scheduled_message(context: CallbackContext):
             user_ids = list(set(line.strip() for line in f if line.strip()))
         for user_id in user_ids:
             try:
-                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet 每日提醒：今天也别错过优惠活动！")
+                await context.bot.send_message(chat_id=int(user_id), text="📢 VictorBet Daily notification：Topup skrg n BIGWIN！")
             except Exception as e:
                 print(f"发送给 {user_id} 失败：{e}")
     except FileNotFoundError:
         print("没有 user_ids.txt 文件，还没有用户启动过 Bot")
 
+# --- 主函数 ---
 def main():
     malaysia = timezone(timedelta(hours=8))
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # 添加处理器
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("send_promo", send_promo))  # 注册新指令 ✅
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, keyword_reply))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_member))
 
-    # 初始化并启动 job_queue
-    job_queue = app.job_queue
-    job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
-    job_queue.start()
+    app.job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
 
     if os.environ.get("RENDER"):
         webhook_url = f"{BASE_URL}{WEBHOOK_PATH}"
