@@ -22,7 +22,7 @@ async def start(update: Update, context: CallbackContext) -> None:
         await context.bot.send_photo(chat_id=chat_id, photo=photo, caption="Welcome to VictorBet💎👇")
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/victorbetMY_bot")],
+        [InlineKeyboardButton("🚀 VTB_bot", url="https://t.me/victorbetMY_bot")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -31,15 +31,15 @@ async def start(update: Update, context: CallbackContext) -> None:
 async def send_promo(update: Update, context: CallbackContext):
     keyboard = [
         [
-            InlineKeyboardButton("🔗 马上注册", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
-            InlineKeyboardButton("💬 联系客服", url="https://direct.lc.chat/14684676/")
+            InlineKeyboardButton("🔗 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
+            InlineKeyboardButton("💬 Contact us", url="https://direct.lc.chat/14684676/")
         ],
         [
-            InlineKeyboardButton("📢 加入频道", url="https://t.me/Victorbet_Channel")
+            InlineKeyboardButton("📢 Victorber Channel", url="https://t.me/Victorbet_Channel")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=CHANNEL_ID, text="🎉 VictorBet 最新优惠上线啦！", reply_markup=reply_markup)
+    await context.bot.send_message(chat_id=CHANNEL_ID, text="🎉 Topup main VictorBet now!!!", reply_markup=reply_markup)
 
 async def button_callback(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
@@ -81,7 +81,7 @@ async def handle_photo_post(update: Update, context: CallbackContext) -> None:
     user_id = update.message.from_user.id
 
     if user_id not in ADMIN_IDS:
-        await update.message.reply_text("🚫 你没有权限发布到频道。")
+        await update.message.reply_text("🚫 you have no right to do.")
         return
 
     if update.message.caption and update.message.photo:
@@ -94,7 +94,7 @@ async def handle_photo_post(update: Update, context: CallbackContext) -> None:
                 InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
             ],
             [
-                InlineKeyboardButton("📢 New Telegram Channel", url="https://t.me/Victorbet_Channel")
+                InlineKeyboardButton("📢 VictorbetMY_bot", url="https://t.me/victorbetMY_bot")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
