@@ -26,7 +26,7 @@ async def start(update: Update, context: CallbackContext) -> None:
 
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/Victorbet_Channel")],
+        [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -78,7 +78,7 @@ async def handle_media_post(update: Update, context: CallbackContext) -> None:
             InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
             InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
         ],
-        [InlineKeyboardButton("📢 VictorbetMY_bot", url="https://t.me/victorbetMY_bot")]
+        [InlineKeyboardButton("📢 VTBmy_bot", url="https://t.me/VTBmy_bot")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
