@@ -8,7 +8,7 @@ from telegram.constants import ParseMode
 from datetime import time, timedelta, timezone
 import logging
 
-TOKEN = "7905072858:AAEtXopc9kNe-92qlgCweRQ302Q2ycqMRI0"
+TOKEN = "7697343968:AAEIBcpUd84M30mUxaHQQUgFGi_dGs3ta2Q"
 CHANNEL_ID = -1002006991320  # 你的频道 ID
 ADMIN_IDS = [7060111888]  # 允许发 rich post 的用户 Telegram ID
 
