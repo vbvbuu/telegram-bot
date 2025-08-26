@@ -25,7 +25,7 @@ async def start(update: Update, context: CallbackContext) -> None:
         await context.bot.send_photo(chat_id=chat_id, photo=photo, caption="Welcome to VictorBet💎👇")
 
     keyboard = [
-        [InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW")],
+        [InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW")],
         [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
@@ -41,11 +41,11 @@ async def button_callback(update: Update, context: CallbackContext) -> None:
 async def keyword_reply(update: Update, context: CallbackContext) -> None:
     text = update.message.text.lower()
     if "hi boss" in text or "daftar" in text:
-        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.net/download/url?referral=3FLEBW\n💬 Chat CS: \nhttps://direct.lc.chat/14684676/")
+        await update.message.reply_text("👇 Tekan link bawah utk register ya:\nhttps://www.victorbet.me/download/url?referral=3FLEBW\n💬 Chat CS: \nhttps://direct.lc.chat/14684676/")
     elif "livechat" in text:
         await update.message.reply_text("💬 Chat CS: \nhttps://direct.lc.chat/14684676/")
     else:
-        await update.message.reply_text("👇 Register link:\nhttps://www.victorbet.net/download/url?referral=3FLEBW\n💬 Chat CS: \nhttps://direct.lc.chat/14684676/")
+        await update.message.reply_text("👇 Register link:\nhttps://www.victorbet.me/download/url?referral=3FLEBW\n💬 Chat CS: \nhttps://direct.lc.chat/14684676/")
 
 async def welcome_new_member(update: Update, context: CallbackContext) -> None:
     for member in update.message.new_chat_members:
@@ -75,7 +75,7 @@ async def handle_media_post(update: Update, context: CallbackContext) -> None:
 
     keyboard = [
         [
-            InlineKeyboardButton("📝 Register", url="https://www.victorbet.net/download/url?referral=3FLEBW"),
+            InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
             InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
         ],
         [InlineKeyboardButton("📢 VTBmy_bot", url="https://t.me/VTBmy_bot")]
