@@ -26,7 +26,7 @@ async def start(update: Update, context: CallbackContext) -> None:
 
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("📝 paly now", url="https://www.victorbet.me"],
+        [InlineKeyboardButton("📝 paly now", url="https://www.victorbet.me")],
         [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
