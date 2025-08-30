@@ -74,12 +74,11 @@ async def handle_media_post(update: Update, context: CallbackContext) -> None:
 
     caption = update.message.caption or "🎬 VictorBet 最新优惠"
 
-    keyboard = [
-        [
-            InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
-            InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
-        ],
-        [InlineKeyboardButton("📢 VTBmy_bot", url="https://t.me/VTBmy_bot")]
+     keyboard = [
+        [InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW")],
+        [InlineKeyboardButton("🎮 play now", url="https://www.victorbet.me")],
+        [InlineKeyboardButton("📢 VTBmy_bot", url="https://t.me/VTBmy_bot")],
+        [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
