@@ -8,9 +8,9 @@ from telegram.constants import ParseMode
 from datetime import time, timedelta, timezone
 import logging
 
-TOKEN = "7697343968:AAEIBcpUd84M30mUxaHQQUgFGi_dGs3ta2Q"
-CHANNEL_ID = -1002006991320  # 你的频道 ID
-ADMIN_IDS = [7060111888]  # 允许发 rich post 的用户 Telegram ID
+TOKEN = os.getenv("BOT_TOKEN")
+CHANNEL_ID = int(os.getenv("CHANNEL_ID"))  # 你的频道 ID
+ADMIN_IDS = int(os.getenv("ADMIN_ID"))  # 允许发 rich post 的用户 Telegram ID
 
 WEBHOOK_PATH = "/webhook"
 PORT = int(os.environ.get("PORT", 5000))
