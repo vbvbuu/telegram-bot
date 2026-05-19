@@ -63,9 +63,30 @@ async def scheduled_message(context: CallbackContext):
                 print(f"发送给 {user_id} 失败：{e}")
     except FileNotFoundError:
         print("没有 user_ids.txt 文件")
+async def handle_media_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print("MEDIA HANDLER TRIGGERED")
+    user_id = update.effective_user.id
 
-# ✅ Rich post 支持图片或视频（来自管理员）
-msg = update.message
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("🚫 No permission.")
+        return
+
+    caption = update.message.caption or "🧧 VTB Promotion"
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🕹️ Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
+            InlineKeyboardButton("💫 Spin", url="https://www.victorbet.me")
+        ],
+        [
+            InlineKeyboardButton("💬 Contact", url="https://direct.lc.chat/14684676/")
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # ✅ Rich post 支持图片或视频（来自管理员）
+    msg = update.message
 
     try:
         # PHOTO
