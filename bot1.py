@@ -2,7 +2,7 @@ import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
-    CallbackContext, CallbackQueryHandler
+    CallbackContext, CallbackQueryHandler， ContextTypes
 )
 from telegram.constants import ParseMode
 from datetime import time, timedelta, timezone
@@ -200,3 +200,5 @@ def main():
         webhook_url=webhook_url
     )
 
+if __name__ == "__main__":
+    main()
