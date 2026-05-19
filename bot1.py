@@ -63,6 +63,8 @@ async def scheduled_message(context: CallbackContext):
                 print(f"发送给 {user_id} 失败：{e}")
     except FileNotFoundError:
         print("没有 user_ids.txt 文件")
+
+
 async def handle_media_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("MEDIA HANDLER TRIGGERED")
     user_id = update.effective_user.id
