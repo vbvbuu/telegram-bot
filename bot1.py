@@ -10,7 +10,7 @@ import logging
 
 TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))  # 你的频道 ID
-ADMIN_IDS = int(os.getenv("ADMIN_ID"))  # 允许发 rich post 的用户 Telegram ID
+ADMIN_IDS = [int(os.getenv("ADMIN_ID"))]  # 允许发 rich post 的用户 Telegram ID
 
 WEBHOOK_PATH = "/webhook"
 PORT = int(os.environ.get("PORT", 5000))
@@ -65,65 +65,115 @@ async def scheduled_message(context: CallbackContext):
         print("没有 user_ids.txt 文件")
 
 # ✅ Rich post 支持图片或视频（来自管理员）
-async def handle_media_post(update: Update, context: CallbackContext) -> None:
-    user_id = update.message.from_user.id
+msg = update.message
 
-    if user_id not in ADMIN_IDS:
-        await update.message.reply_text("🚫 你没有权限发布到频道。")
-        return
+    try:
+        # PHOTO
+        if msg.photo:
+            file_id = msg.photo[-1].file_id
+            await context.bot.send_photo(
+                chat_id=CHANNEL_ID,
+                photo=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
 
-    caption = update.message.caption or "🎬 VictorBet 最新优惠"
+        # VIDEO
+        elif msg.video:
+            file_id = msg.video.file_id
+            await context.bot.send_video(
+                chat_id=CHANNEL_ID,
+                video=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
 
-    keyboard = [
-        [
-            InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
-            InlineKeyboardButton("🎮 play now", url="https://www.victorbet.me")
-        ],
-        [
-            InlineKeyboardButton("📢 VTBmy_bot", url="https://t.me/VTBmy_bot"),
-            InlineKeyboardButton("💬 Contact us", url="https://direct.lc.chat/14684676/")
-        ]
-    ]
+        # GIF / ANIMATION ⭐ 关键修复
+        elif msg.animation:
+            file_id = msg.animation.file_id
+            await context.bot.send_animation(
+                chat_id=CHANNEL_ID,
+                animation=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
+        # DOCUMENT video fallback ⭐ 很重要
+        elif msg.document:
+            file_id = msg.document.file_id
+            await context.bot.send_document(
+                chat_id=CHANNEL_ID,
+                document=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
 
-    if update.message.photo:
-        file_id = update.message.photo[-1].file_id
-        await context.bot.send_photo(chat_id=CHANNEL_ID, photo=file_id, caption=caption, reply_markup=reply_markup)
-    elif update.message.video:
-        file_id = update.message.video.file_id
-        await context.bot.send_video(chat_id=CHANNEL_ID, video=file_id, caption=caption, reply_markup=reply_markup)
-    else:
-        await update.message.reply_text("❗ 请发送图片或视频 + 文案")
+        else:
+            await update.message.reply_text("❗ Unsupported media type")
 
-    await update.message.reply_text("✅ 已发布到频道！")
+        await update.message.reply_text("✅ Posted to channel!")
+
+    except Exception as e:
+        print("SEND ERROR:", e)
+        await update.message.reply_text(f"❌ Failed: {e}")
 
 def main():
     malaysia = timezone(timedelta(hours=8))
+
     app = ApplicationBuilder().token(TOKEN).build()
+       
+    print("BOT STARTED")
 
+    # start command
     app.add_handler(CommandHandler("start", start))
+
+    # button callback
     app.add_handler(CallbackQueryHandler(button_callback))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, keyword_reply))
-    app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome_new_member))
-    app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO, handle_media_post))
 
-    job_queue = app.job_queue
-    job_queue.run_daily(scheduled_message, time=time(17, 0, tzinfo=malaysia))
-    job_queue.start()
-
-    if os.environ.get("RENDER"):
-        webhook_url = f"{BASE_URL}{WEBHOOK_PATH}"
-        print(f"🚀 Starting webhook with URL: {webhook_url} on port {PORT}")
-        app.run_webhook(
-            listen="0.0.0.0",
-            port=PORT,
-            url_path=WEBHOOK_PATH,
-            webhook_url=webhook_url,
+    print("REGISTER MEDIA HANDLER")
+    
+    # media handler
+    app.add_handler(
+        MessageHandler(
+            filters.PHOTO
+            | filters.VIDEO
+            | filters.ANIMATION
+            | filters.Document.ALL,
+            handle_media_post
         )
-    else:
-        print("🖥️ Running in polling mode")
-        app.run_polling()
+    )
 
-if __name__ == "__main__":
-    main()
+    # welcome new member
+    app.add_handler(
+        MessageHandler(
+            filters.StatusUpdate.NEW_CHAT_MEMBERS,
+            welcome_new_member
+        )
+    )
+
+    # text handler
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            keyword_reply
+        )
+    )
+
+    # scheduled message
+    app.job_queue.run_daily(
+        scheduled_message,
+        time=time(20, 0, tzinfo=malaysia)
+    )
+
+    # webhook
+    webhook_url = f"{BASE_URL}{WEBHOOK_PATH}"
+
+    print(f"🚀 Webhook running: {webhook_url}")
+
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=WEBHOOK_PATH,
+        webhook_url=webhook_url
+    )
+
