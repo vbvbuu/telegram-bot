@@ -2,7 +2,7 @@ import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters,
-    CallbackContext, CallbackQueryHandler， ContextTypes
+    CallbackContext, CallbackQueryHandler, ContextTypes
 )
 from telegram.constants import ParseMode
 from datetime import time, timedelta, timezone
