@@ -26,7 +26,7 @@ async def start(update: Update, context: CallbackContext) -> None:
 
     keyboard = [
         [InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW")],
-        [InlineKeyboardButton("📺 FIFA World Cup 2026 Live", url="https://rtmklik.rtm.gov.my/live/sukan")],
+        [InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")],
         [InlineKeyboardButton("🚀 New Telegram Channel", url="https://t.me/VTB33_Channel")],
         [InlineKeyboardButton("📲 Contact us", callback_data="contact_us")]
     ]
@@ -77,12 +77,11 @@ async def handle_media_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [
-            InlineKeyboardButton("🕹️ Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
-            InlineKeyboardButton("💫 Spin", url="https://www.victorbet.me")
+            InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
+            InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
         ],
         [
-            InlineKeyboardButton("📺 FIFA World Cup 2026 Live", url="https://rtmklik.rtm.gov.my/live/sukan"),
-            InlineKeyboardButton("💬 Contact", url="https://direct.lc.chat/14684676/")
+            InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")
         ]
     ]
 
