@@ -66,52 +66,79 @@ async def scheduled_message(context: CallbackContext):
 
 
 async def handle_media_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Diagnostic version: preserve caption entities and log what Telegram returns."""
-    msg = update.message
-    if update.effective_user.id not in ADMIN_IDS:
-        await msg.reply_text("🚫 No permission.")
+    print("MEDIA HANDLER TRIGGERED")
+    user_id = update.effective_user.id
+
+    if user_id not in ADMIN_IDS:
+        await update.message.reply_text("🚫 No permission.")
         return
+
+    caption = update.message.caption or "🧧 VTB Promotion"
 
     keyboard = [
         [
             InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
             InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
         ],
-        [InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")]
+        [
+            InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")
+        ]
     ]
+
     reply_markup = InlineKeyboardMarkup(keyboard)
-    caption = msg.caption if msg.caption is not None else "🧧 VTB Promotion"
-    entities = msg.caption_entities if msg.caption is not None else None
 
-    # Do not log private caption text or access tokens.
-    logging.warning("PREMIUM_DIAG received message_id=%s media=%s caption_entities=%s",
-                    msg.message_id,
-                    'photo' if msg.photo else 'video' if msg.video else 'animation' if msg.animation else 'document' if msg.document else 'other',
-                    [(str(e.type), e.custom_emoji_id if str(e.type) == 'custom_emoji' else None)
-                     for e in (entities or [])])
+    # ✅ Rich post 支持图片或视频（来自管理员）
+    msg = update.message
+
     try:
-        params = dict(chat_id=CHANNEL_ID, caption=caption,
-                      caption_entities=entities, reply_markup=reply_markup)
+        # PHOTO
         if msg.photo:
-            sent = await context.bot.send_photo(photo=msg.photo[-1].file_id, **params)
-        elif msg.video:
-            sent = await context.bot.send_video(video=msg.video.file_id, **params)
-        elif msg.animation:
-            sent = await context.bot.send_animation(animation=msg.animation.file_id, **params)
-        elif msg.document:
-            sent = await context.bot.send_document(document=msg.document.file_id, **params)
-        else:
-            await msg.reply_text("❗ Unsupported media type")
-            return
+            file_id = msg.photo[-1].file_id
+            await context.bot.send_photo(
+                chat_id=CHANNEL_ID,
+                photo=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
 
-        logging.warning("PREMIUM_DIAG sent message_id=%s caption_entities=%s",
-                        sent.message_id,
-                        [(str(e.type), e.custom_emoji_id if str(e.type) == 'custom_emoji' else None)
-                         for e in (sent.caption_entities or [])])
-        await msg.reply_text("✅ Posted to channel! (Diagnostic version)")
+        # VIDEO
+        elif msg.video:
+            file_id = msg.video.file_id
+            await context.bot.send_video(
+                chat_id=CHANNEL_ID,
+                video=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
+
+        # GIF / ANIMATION ⭐ 关键修复
+        elif msg.animation:
+            file_id = msg.animation.file_id
+            await context.bot.send_animation(
+                chat_id=CHANNEL_ID,
+                animation=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
+
+        # DOCUMENT video fallback ⭐ 很重要
+        elif msg.document:
+            file_id = msg.document.file_id
+            await context.bot.send_document(
+                chat_id=CHANNEL_ID,
+                document=file_id,
+                caption=caption,
+                reply_markup=reply_markup
+            )
+
+        else:
+            await update.message.reply_text("❗ Unsupported media type")
+
+        await update.message.reply_text("✅ Posted to channel!")
+
     except Exception as e:
-        logging.exception("PREMIUM_DIAG SEND ERROR")
-        await msg.reply_text(f"❌ Failed: {e}")
+        print("SEND ERROR:", e)
+        await update.message.reply_text(f"❌ Failed: {e}")
 
 def main():
     malaysia = timezone(timedelta(hours=8))
