@@ -73,72 +73,34 @@ async def handle_media_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("🚫 No permission.")
         return
 
-    caption = update.message.caption or "🧧 VTB Promotion"
-
     keyboard = [
         [
             InlineKeyboardButton("📝 Register", url="https://www.victorbet.me/download/url?referral=3FLEBW"),
             InlineKeyboardButton("💬 Contact Us", url="https://direct.lc.chat/14684676/")
         ],
-        [
-            InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")
-        ]
+        [InlineKeyboardButton("🕹️ Play", url="https://www.victorbet.me")]
     ]
-
     reply_markup = InlineKeyboardMarkup(keyboard)
-
-    # ✅ Rich post 支持图片或视频（来自管理员）
     msg = update.message
 
+    if not (msg.photo or msg.video or msg.animation or msg.document):
+        await msg.reply_text("❗ Unsupported media type")
+        return
+
     try:
-        # PHOTO
-        if msg.photo:
-            file_id = msg.photo[-1].file_id
-            await context.bot.send_photo(
-                chat_id=CHANNEL_ID,
-                photo=file_id,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        # VIDEO
-        elif msg.video:
-            file_id = msg.video.file_id
-            await context.bot.send_video(
-                chat_id=CHANNEL_ID,
-                video=file_id,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        # GIF / ANIMATION ⭐ 关键修复
-        elif msg.animation:
-            file_id = msg.animation.file_id
-            await context.bot.send_animation(
-                chat_id=CHANNEL_ID,
-                animation=file_id,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        # DOCUMENT video fallback ⭐ 很重要
-        elif msg.document:
-            file_id = msg.document.file_id
-            await context.bot.send_document(
-                chat_id=CHANNEL_ID,
-                document=file_id,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        else:
-            await update.message.reply_text("❗ Unsupported media type")
-
-        await update.message.reply_text("✅ Posted to channel!")
-
+        # Copy the original media and its caption entities (including custom emoji),
+        # while attaching the channel's inline buttons.
+        await context.bot.copy_message(
+            chat_id=CHANNEL_ID,
+            from_chat_id=msg.chat_id,
+            message_id=msg.message_id,
+            reply_markup=reply_markup,
+        )
+        await msg.reply_text("✅ Posted to channel!")
     except Exception as e:
-        print("SEND ERROR:", e)
-        await update.message.reply_text(f"❌ Failed: {e}")
+        logging.exception("SEND ERROR")
+        await msg.reply_text(f"❌ Failed: {e}")
+
 
 def main():
     malaysia = timezone(timedelta(hours=8))
